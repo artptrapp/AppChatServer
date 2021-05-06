@@ -1,0 +1,141 @@
+<html>
+
+<head>
+    <title>Socket testing</title>
+</head>
+
+<style>
+    body {
+        display: flex;
+    }
+
+    .tools {
+        display: grid;
+    }
+
+    .tools>div {
+        padding: 1rem;
+        border: 1px solid #ccc;
+    }
+</style>
+
+<body>
+    <div class="tools">
+        <div>
+            Username: <input id="username" type="text" />
+            <button id="connect">Connect to socket server</button>
+            <button id="disconnect">Disconnected from the socket server</button>
+        </div>
+
+        <div class="room-tools">
+            Set room name: <input id="room-name" type="text" />
+            <button id="join-room">Join the room with the set name</button>
+            <button id="leave-room">Leave the room</button>
+            <button id="create-room">Create room with the set name</button>
+            <br>
+            <pre id="existing-rooms" class="existing-rooms">
+
+            </pre>
+        </div>
+    </div>
+
+    <div class="events">
+
+    </div>
+
+</body>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js">
+</script>
+
+<script type="text/javascript">
+
+    var socket = {}
+
+    function getElement(id) {
+        return document.getElementById(id)
+    }
+
+    function listenToServerEvents() {
+        socket.on('user-connected', (message) => {
+            console.log(message)
+        });
+
+        socket.on('user-disconnected', (message) => {
+            console.log(message)
+        });
+
+        socket.on('connect', () => {
+            socket.emit('set-username', { username: getElement('username').value })
+        })
+
+        setInterval(() => {
+            const roomContainer = getElement('existing-rooms')
+            roomContainer.innerText = 'Updating rooms...'
+
+            socket.emit('get-rooms', null, args => {
+                roomContainer.innerText = ""
+                roomContainer.textContent = JSON.stringify(args, undefined, 2)
+            })
+        }, 5000)
+    }
+
+    getElement('connect').onclick = () => {
+        const textValue = getElement('username').value
+        if (!textValue) {
+            return alert('username is empty')
+        }
+
+        if (socket.connected) {
+            return alert('Already connected')
+        }
+
+        socket = io()
+        listenToServerEvents()
+    }
+
+    getElement('disconnect').onclick = () => {
+        if (!socket.connected) {
+            return alert('Not connected')
+        }
+
+        socket.disconnect()
+    }
+
+    // ### Rooms
+
+    getElement('join-room').onclick = () => {
+        if (!socket.connected) {
+            return alert('You are currently not connected')
+        }
+
+        const textValue = getElement('room-name').value
+        if (!textValue) {
+            return alert('Room name cannot be empty')
+        }
+
+        socket.emit('join-room', { roomName: textValue }, (result) => {
+            console.log(result)
+        })
+    }
+
+    getElement('create-room').onclick = () => {
+        if (!socket.connected) {
+            return alert('You are currently not connected')
+        }
+
+        const textValue = getElement('room-name').value
+        if (!textValue) {
+            return alert('Room name cannot be empty')
+        }
+
+        const capacity = prompt('set the room capacity')
+
+        socket.emit('create-room', { roomName: textValue, capacity }, (result) => {
+            console.log(result)
+        })
+    }
+
+</script>
+
+</html>
