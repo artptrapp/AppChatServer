@@ -1,11 +1,7 @@
-# SimpleNodeTypescriptBoilerplate
-This is a very simple Node.JS TS Boilerplate with Live Reload. It also includes log4js and a simple JWT middleware.
+# AppChatServer
 
-To run the project, do the following:
+This is a WIP (Work In Progress) for an app chat server, which may or may not be used in the future.
 
-- Go to the root of the project
-- `npm install`
+To run with livereload, the command is `npm run dev`
 
-That's it, folks.
-
-To run it with livereload, just do `npm run dev` in your command line. To build and run once, just execute `npm start` in your command line.
+You can open localhost:3000/socket-test to test the socket mechanics
