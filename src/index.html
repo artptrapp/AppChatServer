@@ -37,6 +37,11 @@
 
             </pre>
         </div>
+
+        <div>
+            Send message: <input id="message-content" type="text" />
+            <button id="send">Send message to your current room</button>
+        </div>
     </div>
 
     <div class="events">
@@ -64,6 +69,10 @@
         socket.on('user-disconnected', (message) => {
             console.log(message)
         });
+
+        socket.on('chat-message', (message) => {
+            console.log(message)
+        })
 
         socket.on('connect', () => {
             socket.emit('set-username', { username: getElement('username').value })
@@ -119,6 +128,19 @@
         })
     }
 
+    getElement('leave-room').onclick = () => {
+        if (!socket.connected) {
+            return alert('You are currently not connected')
+        }
+
+        const textValue = getElement('room-name').value
+        if (!textValue) {
+            return alert('Room name cannot be empty')
+        }
+
+        socket.emit('leave-room')
+    }
+
     getElement('create-room').onclick = () => {
         if (!socket.connected) {
             return alert('You are currently not connected')
@@ -132,6 +154,21 @@
         const capacity = prompt('set the room capacity')
 
         socket.emit('create-room', { roomName: textValue, capacity }, (result) => {
+            console.log(result)
+        })
+    }
+
+    getElement('send').onclick = () => {
+        if (!socket.connected) {
+            return alert('You are currently not connected')
+        }
+
+        const textValue = getElement('message-content').value
+        if (!textValue) {
+            return alert('Message content cannot be empty')
+        }
+
+        socket.emit('chat-message', { content: textValue }, (result) => {
             console.log(result)
         })
     }

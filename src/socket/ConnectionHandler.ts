@@ -55,8 +55,6 @@ class SocketConnectionHandler {
 
     // handles a client disconnection
     private handleClientDisconnection(client: Socket) {
-        UserSocketPool.removeUser(client.id)
-        this.clientCount--;
         logger.warnMessage(`Client with id ${client.id} disconnected.`)
         logger.logMessage(`There are ${this.clientCount} clients connected.`)
 
@@ -68,6 +66,9 @@ class SocketConnectionHandler {
 
         // tells every handler that cares that a client disconnected
         this.eventHandlers.forEach(eventHandler => eventHandler.handleClientDisconnection(client))
+
+        UserSocketPool.removeUser(client.id)
+        this.clientCount--;
     }
 }
 

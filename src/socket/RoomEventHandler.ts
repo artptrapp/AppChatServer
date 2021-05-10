@@ -14,6 +14,10 @@ type JoinRoomArguments = {
     roomName: string
 }
 
+type ChatMessage = {
+    content: string
+}
+
 export type Room = {
     id: string
     roomName: string
@@ -36,8 +40,19 @@ class RoomEventsHandler implements SocketEventHandler {
     attachClientRoomEvents(client: Socket) {
         client.on('join-room', (args, callback) => this.handleRoomJoining(client, args, callback))
         client.on('create-room', (args, callback) => this.handleRoomCreation(client, args, callback))
-        client.on('leave-room', (_, callback) => this.handleRoomLeaving(client, callback))
+        client.on('leave-room', (_) => this.handleRoomLeaving(client))
         client.on('get-rooms', (_, callback) => this.handleGetRooms(client, callback))
+        client.on('chat-message', (args: ChatMessage, callback: Function) => this.handleMessage(client, args, callback))
+    }
+
+    handleMessage(client: Socket, args: ChatMessage, callback: Function): void {
+        const senderData = userPool.getUser(client.id)
+        if (!senderData || !senderData.currentRoom) {
+            return callback({ success: false, reason: 'Invalid sender or room requested' })
+        }
+
+        this.serverInstance.to(senderData.currentRoom).emit('chat-message', args)
+        return callback({ success: true, reason: 'Message sent successfully' })
     }
 
     handleClientConnection(client: Socket): void {
@@ -46,6 +61,7 @@ class RoomEventsHandler implements SocketEventHandler {
 
     handleClientDisconnection(client: Socket): void {
         client.removeAllListeners()
+        this.handleRoomLeaving(client)
     }
 
     handleGetRooms(roomAsker: Socket, callback: Function) {
@@ -63,13 +79,30 @@ class RoomEventsHandler implements SocketEventHandler {
         callback(friendlyRooms)
     }
 
-    handleRoomLeaving(roomJoiner: Socket, callback: Function) {
+    handleRoomLeaving(roomJoiner: Socket) {
         const currentUser = userPool.getUser(roomJoiner.id)
-        if (!currentUser || !currentUser.currentRoom || !currentUser.socket.connected) {
+
+        logger.logMessage(`Will remove user ${currentUser.username} from the room`)
+
+        // do not check for currentUser.socket.disconnected here because
+        // we still need to remove him from the room in case his internet
+        // went out or something
+        if (!currentUser || !currentUser.currentRoom) {
             return
         }
 
         currentUser.socket.leave(currentUser.currentRoom)
+
+        // removes user from the room
+        const room = this.createdRooms.find(room => room.id === currentUser.currentRoom)
+        const userIndexOnRoom = room?.users.findIndex(user => user === roomJoiner.id);
+        if (userIndexOnRoom !== undefined) {
+            room?.users.splice(userIndexOnRoom, 1);
+        }
+
+        logger.logMessage(JSON.stringify(room))
+
+        currentUser.setRoom("")
     }
 
     handleRoomJoining(roomJoiner: Socket, args: JoinRoomArguments, callback: Function) {
@@ -84,6 +117,8 @@ class RoomEventsHandler implements SocketEventHandler {
 
         roomJoiner.join(existingRoom.id)
         existingRoom.users = [...existingRoom.users, roomJoiner.id]
+
+        userPool.getUser(roomJoiner.id).setRoom(existingRoom.id)
 
         return callback({ success: true, reason: `Room with name ${args.roomName} joined successfully.` })
     }
@@ -110,6 +145,9 @@ class RoomEventsHandler implements SocketEventHandler {
         }
 
         this.createdRooms.push(room)
+
+        roomCreator.join(room.id)
+        userPool.getUser(roomCreator.id).setRoom(room.id)
 
         return callback({ success: true, reason: `Room with name ${args.roomName} created successfully.` })
     }
