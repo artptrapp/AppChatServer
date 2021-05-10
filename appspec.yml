@@ -15,7 +15,7 @@ hooks:
 
 branch_config:
     master:
-        deploymentGroupName: production
+        deploymentGroupName: github-deployment
         deploymentGroupConfig:
             serviceRoleArn: arn:aws:iam::550498576243:role/DeployNodeJSRole
             ec2TagFilters:
