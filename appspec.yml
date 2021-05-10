@@ -1,5 +1,7 @@
-version: 0.0
-os: linux
-files:
-  - source: /
-    destination: /var/www/html/
+- name: webfactory/create-aws-codedeploy-deployment
+  # You may pin to the exact commit or the version.
+  # uses: webfactory/create-aws-codedeploy-deployment@cbc07d4e007319e31466e3677d0ae6be033e35e4
+  uses: webfactory/create-aws-codedeploy-deployment@v0.2.2
+  with:
+    # AWS CodeDeploy application name; defaults to short repository name
+    application: # optional
