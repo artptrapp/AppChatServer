@@ -22,4 +22,4 @@ branch_config:
                 - { Type: KEY_AND_VALUE, Key: chatserver-deployment, Value: test }
         deploymentConfig:
             autoRollbackConfiguration:
-                enabled: true
+                enabled: false
