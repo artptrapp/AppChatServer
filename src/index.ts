@@ -43,5 +43,5 @@ app.get('/socket-test', (req, res) => {
 })
 
 httpServer.listen(port, function () {
-    console.log(`App is listening on port ${port}.`);
+    console.log(`App is listening on port ${port}..`);
 });
