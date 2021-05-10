@@ -12,3 +12,14 @@ hooks:
     - location: scripts/start_server.sh
       timeout: 300
       runas: root
+
+branch_config:
+    master:
+        deploymentGroupName: production
+        deploymentGroupConfig:
+            serviceRoleArn: arn:aws:iam::550498576243:role/DeployNodeJSRole
+            ec2TagFilters:
+                - { Type: KEY_AND_VALUE, Key: chatserver-deployment, Value: test }
+        deploymentConfig:
+            autoRollbackConfiguration:
+                enabled: true
