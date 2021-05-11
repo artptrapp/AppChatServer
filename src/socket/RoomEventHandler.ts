@@ -1,9 +1,11 @@
 import { Server, Socket } from "socket.io"
-import User from "../models/User"
 import SocketEventHandler from "./SocketEventHandler"
 import logger from '../utils/logger'
 import userPool from '../utils/UserSocketPool'
 import { newGuid } from '../utils/Guid'
+import { Room } from "../models/Room"
+import RoomBLO from '../blo/RoomBLO'
+import roomBLO from "../blo/RoomBLO"
 
 type CreateRoomArguments = {
     roomName: string
@@ -18,13 +20,6 @@ type ChatMessage = {
     content: string
 }
 
-export type Room = {
-    id: string
-    roomName: string
-    users: string[]
-    capacity: number
-}
-
 class RoomEventsHandler implements SocketEventHandler {
 
     private serverInstance: Server
@@ -35,6 +30,14 @@ class RoomEventsHandler implements SocketEventHandler {
     constructor(serverInstance: Server) {
         this.serverInstance = serverInstance;
         this.intervalId = setInterval(this.checkRoomActivity.bind(this), 10000)
+        this.loadDefaultRooms()
+    }
+
+    private async loadDefaultRooms() {
+        const defaultRooms = await roomBLO.getDefaultRooms()
+        this.createdRooms = this.createdRooms.concat(defaultRooms)
+
+        logger.logMessage(JSON.stringify(this.createdRooms))
     }
 
     attachClientRoomEvents(client: Socket) {
@@ -106,7 +109,8 @@ class RoomEventsHandler implements SocketEventHandler {
     }
 
     handleRoomJoining(roomJoiner: Socket, args: JoinRoomArguments, callback: Function) {
-        const existingRoom = this.createdRooms.find(room => room.roomName === args.roomName)
+        logger.logMessage(JSON.stringify(this.createdRooms))
+        const existingRoom = this.createdRooms.find(room => room.roomName === args.roomName || room.id === args.roomName)
         if (!existingRoom) {
             return callback({ success: false, reason: `There is no room named ${args.roomName}` })
         }
@@ -132,7 +136,7 @@ class RoomEventsHandler implements SocketEventHandler {
             return callback({ success: false, reason: 'Capacity should be a number bigger than 0' })
         }
 
-        const roomExists = this.createdRooms.some(room => room.roomName === args.roomName)
+        const roomExists = this.createdRooms.some(room => room.roomName === args.roomName || room.id === args.roomName)
         if (roomExists) {
             return callback({ success: false, reason: 'Room with this name already exists' })
         }
@@ -141,7 +145,9 @@ class RoomEventsHandler implements SocketEventHandler {
             id: newGuid(),
             roomName: args.roomName,
             capacity: +args.capacity,
-            users: [roomCreator.id]
+            users: [roomCreator.id],
+            backgroundImage: null,
+            isDefault: false
         }
 
         this.createdRooms.push(room)

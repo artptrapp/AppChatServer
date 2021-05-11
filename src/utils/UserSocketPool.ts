@@ -49,6 +49,18 @@ class UserSocketPool {
     public isConnected(socketId: string): boolean {
         return this.users[socketId] && this.users[socketId].socket.connected
     }
+
+    public getByRoom(roomId: string): User[] {
+        const returnValue = []
+        for (let key in this.users) {
+            const user = this.users[key]
+            if (user.currentRoom === roomId) {
+                returnValue.push(user)
+            }
+        }
+
+        return returnValue
+    }
 }
 
 const userPool = new UserSocketPool()

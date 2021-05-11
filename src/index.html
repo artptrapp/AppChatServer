@@ -99,7 +99,7 @@
             return alert('Already connected')
         }
 
-        socket = io('http://3.94.127.228:3000')
+        socket = io('localhost:3000', { transports: ['websocket'] })
         listenToServerEvents()
     }
 
