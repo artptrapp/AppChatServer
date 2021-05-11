@@ -1,1 +1,1 @@
-# cd pwd && npm install
+cd /var/www/html && npm --prefix /var/www/html install /var/www/html
