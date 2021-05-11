@@ -5,6 +5,9 @@ import { Server } from 'socket.io';
 import http from 'http'
 import SocketConnectionHandler from './socket/ConnectionHandler';
 import Router from './Router'
+import AWS from 'aws-sdk'
+
+AWS.config.update({ region: 'us-east-1' })
 
 const app = express();
 const port = process.env.PORT || 3000;
