@@ -8,7 +8,11 @@ import SocketConnectionHandler from './socket/ConnectionHandler';
 const app = express();
 const port = process.env.PORT || 3000;
 const httpServer = http.createServer(app);
-const socketServer = new Server(httpServer)
+const socketServer = new Server(httpServer, {
+    cors: {
+        origin: '*'
+    }
+})
 
 log4js.configure({
     appenders: {
