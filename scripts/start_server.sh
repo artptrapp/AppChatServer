@@ -1,1 +1,1 @@
-npm start --prefix /var/www/html
+nohup npm start --prefix /var/www/html 2>/dev/null 1>/dev/null&
