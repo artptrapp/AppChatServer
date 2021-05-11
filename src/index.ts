@@ -11,7 +11,8 @@ const httpServer = http.createServer(app);
 const socketServer = new Server(httpServer, {
     cors: {
         origin: '*'
-    }
+    },
+    transports: ['websocket']
 })
 
 log4js.configure({
