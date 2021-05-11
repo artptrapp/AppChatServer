@@ -1,2 +1,2 @@
 echo $pwd
-cd .. && npm start
+cd .. && npm start --prefix /var/www/html
