@@ -1,3 +1,6 @@
 #!/bin/bash
 
-cd .. && /home/ec2-user/.nvm/versions/node/v16.1.0/bin/npm install
+export node=/home/ec2-user/.nvm/versions/node/v16.1.0/bin/node
+export npm=/home/ec2-user/.nvm/versions/node/v16.1.0/bin/npm
+
+cd .. && npm install
