@@ -1,1 +1,1 @@
-cd .. && npm install
+# cd pwd && npm install

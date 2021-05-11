@@ -1,1 +1,1 @@
-cd .. && npm start
+npm start
