@@ -15,11 +15,11 @@ hooks:
 
 branch_config:
     master:
-        deploymentGroupName: github-deployment
+        deploymentGroupName: github-deployment-new
         deploymentGroupConfig:
             serviceRoleArn: arn:aws:iam::550498576243:role/DeployNodeJSRole
             ec2TagFilters:
-                - { Type: KEY_AND_VALUE, Key: chatserver-deployment, Value: test }
+                - { Type: KEY_AND_VALUE, Key: chatserver-deployment-new, Value: test }
         deploymentConfig:
             autoRollbackConfiguration:
                 enabled: false
