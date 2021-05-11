@@ -1,1 +1,2 @@
-npm start --prefix $PWD
+echo $pwd
+cd .. && npm start
