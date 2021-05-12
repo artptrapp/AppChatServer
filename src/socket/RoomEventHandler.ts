@@ -162,6 +162,11 @@ class RoomEventsHandler implements SocketEventHandler {
         const activeRooms = []
         for (let i = 0; i < this.createdRooms.length; i++) {
             const room = this.createdRooms[i]
+            // we should not delete default rooms
+            if (room.isDefault) {
+                logger.warnMessage(`There is no one at room ${room.roomName}, but it will not be deleted as it is a default room`)
+                continue
+            }
             const isEveryoneDisconnected = room.users.every(user => !userPool.isConnected(user))
             if (!isEveryoneDisconnected) {
                 activeRooms.push(room)
