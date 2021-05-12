@@ -6,6 +6,8 @@ import http from 'http'
 import SocketConnectionHandler from './socket/ConnectionHandler';
 import Router from './Router'
 import AWS from 'aws-sdk'
+import jwt from './middlewares/JWTVerifier';
+import GeneralRequestHandler from './middlewares/GeneralRequestHandler';
 
 AWS.config.update({ region: 'us-east-1' })
 
@@ -39,6 +41,9 @@ log4js.configure({
 const socketConnectionHandler = new SocketConnectionHandler(socketServer);
 
 app.use(bodyParser.json())
+app.use(jwt())
+
+app.use(GeneralRequestHandler)
 
 const router = new Router(app)
 

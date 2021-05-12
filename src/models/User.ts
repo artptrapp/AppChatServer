@@ -1,5 +1,16 @@
 import { Socket } from "socket.io"
 
+export interface RegisterPayload {
+    username: string,
+    password: string,
+    passwordConfirmation: string
+}
+
+export interface RegisterPayloadResult {
+    success: boolean,
+    reason: string
+}
+
 class User {
     public username: string
     public socket: Socket;

@@ -1,14 +1,18 @@
 import expressJwt from 'express-jwt';
 
+const JWTSECRET = "this-is-my-secret-information"
+
 export default function jwt() {
     return expressJwt(
         {
-            // paths that need jwt
-            secret: "my-secret"
+            secret: JWTSECRET,
+            algorithms: ['RS256']
         }).unless({
             path: [
                 // paths that do not need jwt
-                '/health-check'
+                '/health-check',
+                '/rooms/default',
+                '/auth/register'
             ]
         })
 }

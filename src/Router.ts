@@ -1,4 +1,5 @@
 import { Express } from 'express-serve-static-core'
+import AuthController from './controllers/AuthController'
 import BaseController from './controllers/BaseController'
 import RoomController from './controllers/RoomController'
 
@@ -14,6 +15,7 @@ export default class Router {
 
     private initializeControllers() {
         this.controllers.push(new RoomController(this.serverInstance))
+        this.controllers.push(new AuthController(this.serverInstance))
     }
 
 }
