@@ -1,9 +1,13 @@
 # First, lets kill all the nohup / node processes
-for PID in `ps -ef | grep nohup | awk '{print $2}'`;
-    do kill PID;
+ps auwwx | gawk '/nohup/{print $2}' | while read PID
+do
+    sudo kill $PID
+done
 
-for PID in `ps -ef | grep node | awk '{print $2}'`;
-    do kill PID;
+ps auwwx | gawk '/node/{print $2}' | while read PID
+do
+    sudo kill $PID
+done
 
-
+# Then, install the dependencies
 npm --prefix /var/www/html install /var/www/html
