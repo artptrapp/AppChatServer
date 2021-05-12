@@ -5,7 +5,7 @@ import userPool from "../utils/UserSocketPool"
 class RoomBLO {
 
     private readonly TABLE_NAME = "Rooms"
-    private dbClient = new DynamoDB.DocumentClient()
+    private dbClient = new DynamoDB.DocumentClient({ region: 'us-east-1' })
 
     public async getDefaultRooms(): Promise<Room[]> {
         const queryParameters = {
