@@ -4,7 +4,6 @@ import logger from '../utils/logger'
 import userPool from '../utils/UserSocketPool'
 import { newGuid } from '../utils/Guid'
 import { Room } from "../models/Room"
-import RoomBLO from '../blo/RoomBLO'
 import roomBLO from "../blo/RoomBLO"
 
 type CreateRoomArguments = {
@@ -165,6 +164,7 @@ class RoomEventsHandler implements SocketEventHandler {
             // we should not delete default rooms
             if (room.isDefault) {
                 logger.warnMessage(`There is no one at room ${room.roomName}, but it will not be deleted as it is a default room`)
+                activeRooms.push(room)
                 continue
             }
             const isEveryoneDisconnected = room.users.every(user => !userPool.isConnected(user))

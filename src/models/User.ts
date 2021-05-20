@@ -1,5 +1,17 @@
 import { Socket } from "socket.io"
 
+export interface LoginPayloadResult {
+    username?: string,
+    token?: string,
+    success: boolean,
+    reason: string
+}
+
+export interface LoginPayload {
+    username: string,
+    password: string
+}
+
 export interface RegisterPayload {
     username: string,
     password: string,

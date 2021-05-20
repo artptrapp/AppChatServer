@@ -1,7 +1,8 @@
 import { DynamoDB } from "aws-sdk"
-import { PutItemInput, QueryInput } from "aws-sdk/clients/dynamodb"
-import { RegisterPayload, RegisterPayloadResult } from "../models/User"
+import { GetItemInput } from "aws-sdk/clients/dynamodb"
+import User, { LoginPayload, LoginPayloadResult, RegisterPayload, RegisterPayloadResult } from "../models/User"
 import encryptString from "../utils/Encryption"
+import { generateJwt } from "../utils/Jwt"
 
 class AuthBLO {
 
@@ -68,6 +69,49 @@ class AuthBLO {
         return {
             reason: 'Registered succesfully',
             success: true
+        }
+    }
+
+    public async login(payload: LoginPayload): Promise<LoginPayloadResult> {
+        if (!payload.username || !payload.password) {
+            return {
+                success: false,
+                reason: 'Missing information'
+            }
+        }
+
+        const queryParameters = {
+            TableName: this.TABLE_NAME,
+            Key: {
+                "username": payload.username
+            }
+        }
+
+        const result = await this.dbClient.get(queryParameters).promise();
+
+        if (!result.Item) {
+            return {
+                success: false,
+                reason: 'User not found'
+            }
+        }
+
+        const encryptedPassword = encryptString(payload.password);
+
+        if (result.Item["encryptedPassword"] !== encryptedPassword) {
+            return {
+                success: false,
+                reason: 'Wrong password'
+            }
+        }
+
+        const jwt = generateJwt({ username: payload.username })
+
+        return {
+            success: true,
+            reason: 'ok',
+            token: jwt,
+            username: payload.username
         }
     }
 

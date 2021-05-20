@@ -25,5 +25,8 @@
     "socket.io": "^4.0.1",
     "ts-node-dev": "^1.0.0-pre.49",
     "typescript": "^3.9.5"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^8.5.1"
   }
 }
