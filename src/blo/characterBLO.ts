@@ -48,6 +48,7 @@ class CharacterBLO {
         }
     }
 
+
     public async getCharacter(id: string): Promise<CharacterData | null> {
         if (!id) {
             return null
